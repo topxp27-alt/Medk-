@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050711">
+<title>Medk • Voice AI</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#fff;background:
+  radial-gradient(circle at 50% 35%,#18295a 0,#0b1026 28%,#050711 68%);
+}
+.app{height:100%;display:flex;flex-direction:column;align-items:center}
+.top{width:100%;padding:calc(18px + env(safe-area-inset-top)) 22px 12px;text-align:center}
+.logo{font-size:28px;font-weight:800;letter-spacing:.5px}
+.status{margin-top:6px;font-size:13px;color:#9ca9c8;min-height:20px}
+.stage{flex:1;width:100%;display:flex;align-items:center;justify-content:center;position:relative}
+.orb{
+ width:210px;height:210px;border-radius:50%;
+ border:1px solid rgba(130,170,255,.35);
+ background:radial-gradient(circle at 35% 28%,#9cc5ff 0,#527cff 17%,#263ca8 42%,#0c143c 72%);
+ box-shadow:0 0 35px rgba(75,116,255,.55),0 0 100px rgba(54,83,255,.25),inset 0 0 45px rgba(255,255,255,.15);
+ display:flex;align-items:center;justify-content:center;
+ transition:.25s transform,.25s box-shadow;
+ -webkit-tap-highlight-color:transparent;
+}
+.orb:active{transform:scale(.96)}
+.orb.listening{
+ animation:pulse 1.15s infinite;
+ box-shadow:0 0 55px rgba(86,184,255,.8),0 0 130px rgba(41,117,255,.35),inset 0 0 55px rgba(255,255,255,.2)
+}
+.orb.thinking{animation:think 1.7s infinite}
+.orb.speaking{animation:speak .55s infinite alternate}
+.icon{font-size:58px;filter:drop-shadow(0 3px 12px rgba(255,255,255,.35))}
+.bottom{padding:10px 24px calc(28px + env(safe-area-inset-bottom));text-align:center;color:#7f8baa;font-size:13px}
+.tip{margin-top:8px}
+@keyframes pulse{50%{transform:scale(1.055)}}
+@keyframes think{50%{transform:scale(1.035) rotate(3deg)}}
+@keyframes speak{to{transform:scale(1.045)}}
+.hidden{display:none}
+.error{color:#ff9d9d}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo">medk</div>
+    <div class="status" id="status">Tap the orb to talk</div>
+  </header>
+
+  <main class="stage">
+    <button class="orb" id="orb" aria-label="Talk to Medk">
+      <span class="icon" id="icon">🎙️</span>
+    </button>
+  </main>
+
+  <footer class="bottom">
+    <div>Voice AI</div>
+    <div class="tip">Tap to start • Tap again when you're finished</div>
+  </footer>
+</div>
+
+<script>
+const orb=document.getElementById("orb");
+const icon=document.getElementById("icon");
+const statusEl=document.getElementById("status");
+
+let recorder=null;
+let stream=null;
+let chunks=[];
+let recording=false;
+
+function setState(state,message){
+  orb.classList.remove("listening","thinking","speaking");
+  if(state) orb.classList.add(state);
+  icon.textContent=state==="listening"?"⏹️":state==="thinking"?"🧠":state==="speaking"?"🔊":"🎙️";
+  statusEl.textContent=message;
+}
+
+function chooseMime(){
+  const types=[
+    "audio/mp4",
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/ogg;codecs=opus"
+  ];
+  return types.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || "";
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onloadend=()=>resolve(reader.result.split(",")[1]);
+    reader.onerror=reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function startRecording(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    setState("", "This browser can't access the microphone.");
+    return;
+  }
+
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mime=chooseMime();
+    recorder=mime ? new MediaRecorder(stream,{mimeType:mime}) : new MediaRecorder(stream);
+    chunks=[];
+
+    recorder.ondataavailable=e=>{
+      if(e.data && e.data.size) chunks.push(e.data);
+    };
+
+    recorder.onstop=sendRecording;
+    recorder.onerror=()=>{
+      stopTracks();
+      setState("", "Recording error. Try again.");
+    };
+
+    recorder.start();
+    recording=true;
+    setState("listening","Listening… tap the orb when you're finished");
+  }catch(e){
+    console.error(e);
+    setState("", e.name==="NotAllowedError" ? "Microphone permission was denied." : "Couldn't start the microphone.");
+  }
+}
+
+function stopTracks(){
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
+}
+
+function stopRecording(){
+  if(!recorder || recorder.state==="inactive") return;
+  recorder.stop();
+  recording=false;
+  stopTracks();
+  setState("thinking","Medk is listening to your recording…");
+}
+
+async function sendRecording(){
+  try{
+    const blob=new Blob(chunks,{type:recorder.mimeType||"audio/mp4"});
+    if(!blob.size) throw new Error("Empty recording");
+
+    const audio=await blobToBase64(blob);
+
+    const r=await fetch("/api/voice",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        audio,
+        mimeType:blob.type || "audio/mp4"
+      })
+    });
+
+    const data=await r.json();
+    if(!r.ok) throw new Error(data.error||"Voice request failed");
+
+    speak(data.reply);
+  }catch(e){
+    console.error(e);
+    setState("",e.message||"Medk couldn't process your voice.");
+  }
+}
+
+function speak(text){
+  if(!("speechSynthesis" in window)){
+    setState("",text);
+    return;
+  }
+
+  setState("speaking","Medk is speaking…");
+  speechSynthesis.cancel();
+
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="en-US";
+  u.rate=.96;
+  u.pitch=1;
+
+  u.onend=()=>setState("","Tap the orb to talk again");
+  u.onerror=()=>setState("","Tap the orb to talk again");
+
+  speechSynthesis.speak(u);
+}
+
+orb.addEventListener("click",()=>{
+  if(speechSynthesis && speechSynthesis.speaking) speechSynthesis.cancel();
+
+  if(recording) stopRecording();
+  else startRecording();
+});
+</script>
+</body>
+</html>
