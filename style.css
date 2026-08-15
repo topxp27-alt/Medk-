@@ -1,0 +1,401 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #02050b;
+  color: #edf8ff;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at 50% 28%,
+      #08284a 0,
+      #030812 32%,
+      #02050b 70%
+    );
+
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+
+  max-width: 760px;
+  min-height: 100vh;
+
+  margin: auto;
+
+  padding: 18px 16px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.brand i {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: #56eaff;
+
+  box-shadow:
+    0 0 22px #56eaff;
+}
+
+.brand b {
+  display: block;
+
+  letter-spacing: 4px;
+}
+
+.brand small {
+  font-size: 9px;
+
+  opacity: .45;
+
+  letter-spacing: 2px;
+}
+
+header button,
+.tools button,
+.chips button {
+  background: #071522;
+
+  color: #91eaff;
+
+  border:
+    1px solid #17364d;
+
+  border-radius: 12px;
+
+  padding: 9px 12px;
+}
+
+.hero {
+  text-align: center;
+
+  padding:
+    26px 0
+    8px;
+}
+
+.orb {
+  width: 190px;
+  height: 190px;
+
+  margin: auto;
+
+  position: relative;
+
+  display: grid;
+  place-items: center;
+}
+
+.core {
+  width: 88px;
+  height: 88px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      white 0 5%,
+      #7ff5ff 12%,
+      #1485ff 40%,
+      #06183c 72%,
+      #02050b
+    );
+
+  box-shadow:
+    0 0 25px #3de5ff,
+    0 0 80px #1766ff;
+
+  animation: pulse 2s infinite;
+}
+
+.ring {
+  position: absolute;
+
+  border:
+    1px solid #38dcff;
+
+  border-radius: 50%;
+
+  inset: 20px;
+
+  opacity: .45;
+
+  animation:
+    spin
+    7s
+    linear
+    infinite;
+}
+
+.ring.b {
+  inset: 5px;
+
+  border-style: dashed;
+
+  opacity: .22;
+
+  animation-direction: reverse;
+
+  animation-duration: 11s;
+}
+
+.orb.active .core {
+  animation:
+    pulse
+    .65s
+    infinite;
+}
+
+.state {
+  font-size: 14px;
+
+  letter-spacing: 4px;
+
+  color: #71eaff;
+}
+
+.hero p {
+  opacity: .45;
+
+  font-size: 13px;
+}
+
+.chat {
+  min-height: 105px;
+
+  max-height: 30vh;
+
+  overflow: auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.msg {
+  max-width: 88%;
+
+  background: #07111d;
+
+  border:
+    1px solid #132b3f;
+
+  border-radius: 14px;
+
+  padding: 11px 13px;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+}
+
+.msg.user {
+  align-self: flex-end;
+
+  background: #0a1c2a;
+}
+
+.bar {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.bar input,
+.creatorPanel input {
+  flex: 1;
+
+  min-width: 0;
+
+  background: #060c14;
+
+  border:
+    1px solid #183149;
+
+  color: white;
+
+  border-radius: 14px;
+
+  padding: 13px;
+
+  outline: none;
+}
+
+.bar button {
+  width: 48px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  background: #0a2334;
+
+  color: #fff;
+}
+
+.bar #send {
+  background: #0b6793;
+}
+
+.chips,
+.tools {
+  display: flex;
+
+  gap: 7px;
+
+  overflow: auto;
+
+  padding: 9px 0;
+}
+
+.chips button,
+.tools button {
+  white-space: nowrap;
+}
+
+.panel {
+  margin-top: 10px;
+
+  background: #050b13;
+
+  border:
+    1px solid #1a3a50;
+
+  border-radius: 16px;
+
+  padding: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+.ph {
+  display: flex;
+
+  justify-content: space-between;
+
+  color: #70eaff;
+
+  margin-bottom: 10px;
+}
+
+.ph button {
+  background: none;
+
+  border: 0;
+
+  color: white;
+
+  font-size: 20px;
+}
+
+.test {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 10px 0;
+
+  border-bottom:
+    1px solid #102131;
+
+  font-size: 13px;
+}
+
+.ok {
+  color: #63efa5;
+}
+
+.warn {
+  color: #ffd166;
+}
+
+.creatorPanel {
+  display: grid;
+
+  gap: 8px;
+}
+
+.creatorPanel button {
+  background: #0a5d83;
+
+  color: white;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  padding: 11px;
+}
+
+pre {
+  white-space: pre-wrap;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  background: #03070d;
+
+  padding: 10px;
+
+  border-radius: 10px;
+}
+
+footer {
+  text-align: center;
+
+  opacity: .28;
+
+  font-size: 10px;
+
+  padding: 18px;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.09);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
