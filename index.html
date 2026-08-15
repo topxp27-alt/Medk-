@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <title>TopX AI</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<main>
+
+<header>
+
+  <div class="brand">
+
+    <i></i>
+
+    <div>
+      <b>TOPX</b>
+      <small>PERSONAL AI</small>
+    </div>
+
+  </div>
+
+  <button id="test">
+    SYSTEM TEST
+  </button>
+
+</header>
+
+
+<section class="hero">
+
+  <div id="orb" class="orb">
+
+    <div class="ring a"></div>
+
+    <div class="ring b"></div>
+
+    <div class="core"></div>
+
+  </div>
+
+  <h2 id="state">
+    READY
+  </h2>
+
+  <p id="hint">
+    Talk to TopX or type a command
+  </p>
+
+</section>
+
+
+<section id="chat" class="chat"></section>
+
+
+<div class="bar">
+
+  <input
+    id="cmd"
+    placeholder="Tell TopX what to do…"
+  >
+
+  <button id="mic">
+    🎙
+  </button>
+
+  <button id="send">
+    ➤
+  </button>
+
+</div>
+
+
+<div class="chips">
+
+  <button data-c="Open Instagram">
+    Instagram
+  </button>
+
+  <button data-c="Open YouTube">
+    YouTube
+  </button>
+
+  <button data-c="Open Netflix">
+    Netflix
+  </button>
+
+  <button data-c="Create a YouTube video about AI">
+    Create Video
+  </button>
+
+</div>
+
+
+<section class="tools">
+
+  <button id="imageBtn">
+    🖼 Ask about an image
+  </button>
+
+  <input
+    id="image"
+    type="file"
+    accept="image/*"
+    hidden
+  >
+
+  <button id="creator">
+    🎬 YouTube Studio
+  </button>
+
+</section>
+
+
+<section
+  id="panel"
+  class="panel hidden"
+>
+
+  <div class="ph">
+
+    <b>TOPX SYSTEM TEST</b>
+
+    <button id="close">
+      ×
+    </button>
+
+  </div>
+
+  <div id="tests"></div>
+
+</section>
+
+
+<section
+  id="creatorPanel"
+  class="panel hidden"
+>
+
+  <div class="ph">
+
+    <b>YOUTUBE CREATOR</b>
+
+    <button id="closeCreator">
+      ×
+    </button>
+
+  </div>
+
+  <input
+    id="topic"
+    placeholder="Video topic…"
+  >
+
+  <button id="makePlan">
+    BUILD VIDEO PLAN
+  </button>
+
+  <pre id="plan"></pre>
+
+  <button id="publish">
+    PUBLISH / CONNECT ACCOUNT
+  </button>
+
+</section>
+
+
+<footer>
+  TopX AI • real actions require device permissions
+  and official API connections
+</footer>
+
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>
